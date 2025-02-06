@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget version="0.2">
+	<title>Mh Tab Slide</title>
+	<description>문서를 탭형태로 출력 슬라이딩 위젯입니다.</description>
+	<version>1.0</version>
+	<date>2025-02-06</date>
+
+	<author email_address="80san@moonhouse.co.kr" link="https://moonhouse.co.kr">
+		<name>제로</name>
+	</author>
+
+	<extra_vars>
+	<group>
+	<title>기본 설정</title>
+		  <var id="list_count">
+			<type>text</type>
+			<name>목록수</name>
+			<description>출력될 목록의 수를 정하실 수 있습니다. (기본 5개)</description>
+		</var>
+		<var id="order_target">
+			<type>select</type>
+			<name>정렬 대상</name>
+			<description>등록된 순서 또는 변경된 순서로 정렬을 할 수 있습니다.</description>
+			<options>
+				<value>list_order</value>
+				<name>최신 등록순</name>
+			</options>
+			<options>
+				<value>update_order</value>
+				<name>최근 변경순</name>
+			</options>
+		</var>
+		<var id="order_type">
+			<type>select</type>
+			<name>정렬 방법</name>
+			<options>
+				<value>desc</value>
+				<name>내림차순</name>
+			</options>
+			<options>
+				<value>asc</value>
+				<name>올림차순</name>
+			</options>
+		</var>
+		<var id="duration_new">
+			<type>text</type>
+			<name>new 표시 시간 (hours)</name>
+			<description>새로 등록된 게시물의 new 표시시간을 정할 수 있습니다. (시간 24단위)</description>
+		</var>
+		<var id="subject_cut_size">
+			<type>text</type>
+			<name>제목 글자수</name>
+			<description>제목 글자수를 지정할 수 있습니다. (기본 20)</description>
+		</var>
+		<var id="thumbnail_type">
+			<type>select</type>
+			<name>썸네일 생성 방법</name>
+			<description>썸네일 생성 방법을 선택할 수 있습니다. (fill : 채우기, crop : 꽉 채우기, ratio : 비율 맞추기)</description>
+			<options>
+				<name>fill (채우기)</name>
+				<value>fill</value>
+			</options>
+			<options>
+				<value>crop</value>
+				<name>Crop (채우기)</name>
+			</options>
+			<options>
+				<value>ratio</value>
+				<name>Ratio (비율 맞추기)</name>
+			</options>
+		</var>
+		<var id="thumbnail_width">
+			<type>text</type>
+			<name>이미지 가로크기</name>
+			<description>출력될 이미지의 가로크기를 정하실 수 있습니다. (기본 100)</description>
+		</var>
+		<var id="thumbnail_height">
+			<type>text</type>
+			<name>이미지 세로크기</name>
+			<description>이미지의 세로 크기를 지정할 수 있습니다. (기본 100px)</description>
+		</var>
+		<var id="zoom">
+			<name>썸네일 줌 형식</name>
+			<description />
+			<type>select</type>
+			<options>
+				<name>게시판링크</name>
+				<value></value>
+			</options>
+			<options>
+				<name>줌 형식</name>
+				<value>Y</value>
+			</options>
+		</var>
+		<var id="thumbnail_zoom">
+			<name>썸네일 줌배율</name>
+			<description>썸네일 줌 형식 선택시 줌배율을 지정합니다. (기본 2)</description>
+			<type>text</type>
+		</var>
+		<var id="display_author">
+			<type>select</type>
+			<name>글쓴이 표시</name>
+			<description />
+			<options>
+				<value>Y</value>
+				<name>표시</name>
+			</options>
+			<options>
+				<value>N</value>
+				<name>표시하지 않음</name>
+			</options>
+		</var>
+		<var id="display_regdate">
+			<type>select</type>
+			<name>작성일 표시</name>
+			<description />
+			<options>
+				<value>Y</value>
+				<name>표시</name>
+			</options>
+			<options>
+				<value>N</value>
+				<name>표시하지 않음</name>
+			</options>
+		</var>
+		<var id="display_readed_count">
+			<type>select</type>
+			<name>조회수 표시</name>
+			<description />
+			<options>
+				<value>Y</value>
+				<name>표시</name>
+			</options>
+			<options>
+				<value>N</value>
+				<name>표시하지 않음</name>
+			</options>
+		</var>
+		<var id="display_voted_count">
+			<type>select</type>
+			<name>추천수 표시</name>
+			<description />
+			<options>
+				<value>Y</value>
+				<name>표시</name>
+			</options>
+			<options>
+				<value>N</value>
+				<name>표시하지 않음</name>
+			</options>
+		</var>
+		<var id="thumd_nails">
+			<name>썸네일 표시</name>
+			<type>select</type>
+			<description>탭 형태 최근 이미지 출력 스킨은 지원하지 않음</description>
+			<options>
+				<name>표시</name>
+				<value>Y</value>
+			</options>
+			<options>
+				<name>표시하지 않음</name>
+				<value>N</value>
+			</options>
+		</var>
+		<var id="tab_text">
+			<type>text</type>
+			<name>Tab 제목</name>
+			<description>Tab 상단좌측에 출력될 제목(탭 형태 최근 이미지 출력에만 지원)</description>
+		</var>
+		<var id="file_icon" type="select">
+			<name>파일아이콘 표시</name>
+			<options>
+				<value></value>
+				<name>출력</name>
+			</options>
+			<options>
+				<value>N</value>
+				<name>출력하지 않음</name>
+			</options>
+		</var>
+		<var id="module_srls">
+			<type>module_srl_list</type>
+			<name>대상 모듈</name>
+			<description>선택하신 모듈에 등록된 글을 대상으로 합니다.</description>
+		</var>
+	</group>
+
+	<group>
+		<title>Slide 설정</title>
+		<var id="view_no">
+			<type>text</type>
+			<name>출력수</name>
+			<description>화면에 출력될 목록의 수를 정합니다.(기본값: 2개)</description>
+		</var>
+		<var id="autoplay">
+			<type>select</type>
+			<name>Auto Play</name>
+			<description>슬라이딩 자동으로 설정</description>
+			<options>
+				<name>자동</name>
+				<value>true</value>
+			</options>
+			<options>
+				<name>수동</name>
+				<value>false</value>
+			</options>
+		</var>
+		<var id="autospeed">
+			<type>text</type>
+			<name>Auto Stop Speed</name>
+			<description>슬라이딩 머무는 시간(기본 5000 / 5초)</description>
+		</var>
+		<var id="speed">
+			<type>text</type>
+			<name>Auto Play Speed</name>
+			<description>슬라이딩 Play 속도(기본 3000 / 3초)</description>
+		</var>
+		<var id="scroll_no">
+			<type>text</type>
+			<name>슬라이딩 Box 수</name>
+			<description>화면에 슬라이딩 되는 Box수를 정합니다.(기본값: 1개)</description>
+		</var>
+		<var id="infinite">
+			<name>반복</name>
+			<description>슬라이딩 무한 반복</description>
+			<type>select</type>
+			<options>
+				<name>무한반복</name>
+				<value>true</value>
+			</options>
+			<options>
+				<name>단일진행</name>
+				<value>false</value>
+			</options>
+		</var>
+		<var id="dots">
+			<name>하단 Dots</name>
+			<description>Box 하단 Dots 출력</description>
+			<type>select</type>
+			<options>
+				<name>출력</name>
+				<value>true</value>
+			</options>
+			<options>
+				<name>출력하지 않음</name>
+				<value>false</value>
+			</options>
+		</var>
+		<var id="vertical">
+			<name>슬라이딩 방향</name>
+			<description>슬라이딩이 움직이는 방향</description>
+			<type>select</type>
+			<options>
+				<name>좌우</name>
+				<value>false</value>
+			</options>
+			<options>
+				<name>상하</name>
+				<value>true</value>
+			</options>
+		</var>
+		<var id="center_m">
+			<name>좌우로 더보기</name>
+			<description>화면 좌우로 이전Box, 다음Box 일부 출력</description>
+			<type>select</type>
+			<options>
+				<name>Off</name>
+				<value>false</value>
+			</options>
+			<options>
+				<name>On</name>
+				<value>true</value>
+			</options>
+		</var>
+		<var id="center_padding">
+			<type>text</type>
+			<name>　┖  좌우의 넓이 지정</name>
+			<description>이전Box, 다음Box가 보이는 넓이 지정(기본값: 50px )</description>
+		</var>
+		<var id="fade">
+			<name>화면 Fade</name>
+			<description>출력수 1개, 방향이 가로일때 화면이 Fade되면서 이동</description>
+			<type>select</type>
+			<options>
+				<name>Off</name>
+				<value>false</value>
+			</options>
+			<options>
+				<name>On</name>
+				<value>true</value>
+			</options>
+		</var>
+	</group>
+	</extra_vars>
+</widget>

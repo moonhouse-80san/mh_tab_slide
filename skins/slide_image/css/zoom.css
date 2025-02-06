@@ -1,0 +1,5 @@
+.newest_tapbox_image .zoom-section{clear:both;margin:0;}
+.newest_tapbox_image .zoom-small-image{border:0px solid #CCC; }
+.newest_tapbox_image .cloud-zoom-lens {border: 1px solid #888;margin:-1px;background-color:#fff;cursor:move;}
+.newest_tapbox_image .cloud-zoom-big {border:1px solid #ccc;overflow:hidden;}
+.newest_tapbox_image .cloud-zoom-loading {color:white;background:#222;padding:3px;border:1px solid #000;}

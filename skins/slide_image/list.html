@@ -1,0 +1,169 @@
+{@ $_id_prefix = rand(1111111,9999999); }
+{@ $wi = $widget_info; }
+
+<style type="text/css">
+	<block cond="!$widget_info->file_icon == ''">
+		.c_icon img[alt~="file"] {display:none;}
+	</block>
+</style>
+
+<!--@if($colorset=="black")--> 
+	<load target="css/black.css" />
+<!--@elseif($colorset=="white")--> 
+	<load target="css/white.css" />
+<!--@end-->
+
+<load target="./css/zoom.css" />
+<load target="./css/normal.css" />
+<load target="./js/tab.js" />
+<load target="./js/cloud-zoom.1.0.2.min.js" />
+<load target="./js/slick.min.js" />
+
+<script>
+	$(document).ready(function() {
+		$('.tab-slide').slick({
+			slide: 'div',
+			focusOnSelect: true,
+			lazyLoad: 'ondemand',
+			slidesToShow: {$wi->view_no},
+			slidesToScroll : {$wi->scroll_no},
+			speed : {$wi->speed},
+			autoplaySpeed: {$wi->autospeed},
+			rows: {$wi->rows},
+			infinite: {$wi->infinite},
+			dots: {$wi->dots},
+			dotsClass: 'slick-dots',
+			autoplay: {$wi->autoplay},
+			vertical : {$wi->vertical},
+			cssEase: 'ease',
+			centerMode: {$wi->center_m},
+			fade: {$wi->fade},
+			centerPadding: '{$wi->center_padding}',
+
+			responsive: [ // 반응형 웹 구현 옵션
+					{
+						breakpoint: 1250, //화면 사이즈 1200px
+						settings: {
+							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+							slidesToShow:4
+						}
+					},
+					{
+						breakpoint: 960, //화면 사이즈 960px
+						settings: {
+							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+							slidesToShow:3
+						}
+					},
+					{
+						breakpoint: 740, //화면 사이즈 740px
+						settings: {
+							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+							slidesToShow:2
+						}
+					},
+					{
+						breakpoint: 479, //화면 사이즈 479px
+						settings: {
+							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+							slidesToShow:1,
+							slidesToScroll :1,
+							arrows: false,
+							dots: false
+						}
+					}
+				]
+		});
+	});
+</script>
+
+<div class="newest_tapbox_image">
+	<div class="tabBox">
+		<div class="right-corner">
+			<div class="left-corner"><span class="tab_title">{$wi->tab_text}</span></div>
+			<div class="left-corner-on"></div>
+			<!--@if($wi->rows_list_count>1)--><!--@end-->
+			<!--@foreach($tab_list as $key => $val)-->
+				<div class="tab <!--@if(!$_checked)-->on"{@ $_checked = true;}<!--@end-->" id="tab_{$_id_prefix}_{$key}" onmouseover="overTab(this);">
+					<div>
+						<!--@if(!Mobile::isMobileCheckByAgent())-->
+							<a href="{getUrl('','mid',$val->mid)}">{htmlspecialchars($val->browser_title)}</a>
+						<!--@else-->
+							{htmlspecialchars($val->browser_title)}
+						<!--@end-->
+					</div>
+				</div>
+			<!--@end-->
+			<div class="clear"></div>
+		</div>
+	</div>
+
+	{@ $_checked = false; }
+	<!--@foreach($tab_list as $key => $val)-->
+		<div class="tabContent <!--@if(!$_checked)-->show{@ $_checked = true;}<!--@else-->hide<!--@end-->" id="content_{$_id_prefix}_{$key}" style="overflow-x: auto;">
+			{@ $_thumbnail_checked = false; }
+			<table cellspacing="0">
+				<tr class="tab-slide">
+					<!--@foreach($val->document_list as $k => $v)-->
+						<td>
+							<table cellspacing="0">
+								<tr>
+									<td class="zoom-section">
+										<div class="thumbnail zoom-small-image">
+											<a href=<!--@if($wi->zoom== 'Y')-->"{$v->getThumbnail($wi->thumbnail_width*$wi->thumbnail_zoom,$wi->thumbnail_height*$wi->thumbnail_zoom,ratio)}" class='cloud-zoom' rel="position:'inside',showTitle:false,adjustX:-1,adjustY:-1"<!--@else-->"{getUrl('','document_srl',$v->document_srl)}" onfocus="this.blur()"<!--@end-->>
+												<img style="width:{$wi->thumbnail_width}px; height: {$wi->thumbnail_height}px;" src="{$v->getThumbnail($wi->thumbnail_width,$wi->thumbnail_height,$wi->thumbnail_type)}" onerror="this.src='{$tpl_path}images/no_image.png'" class="pr_tooltip" pr_color="blue" pr_position="right" title="{$v->getTitle()}"/>
+											</a>
+										</div>
+									</td>
+								</tr>
+
+								<tr>
+									<td class="titleBox">
+										<div class="title">
+											<a href="{$v->getPermanentUrl()}">{$v->getTitle($wi->subject_cut_size)}</a>
+											<span class="c_icon">{$v->printExtraImages($wi->duration_new)}</span>
+										</div>
+										<!--@if($v->getCommentCount() && !$wi->display_readed_count == 'Y')-->
+											<span class="comment_cnt">*{$v->getCommentCount()}</span>
+										<!--@end-->
+										<div cond="$wi->display_regdate == 'Y'" class="regdate">{$v->getRegdate("Y m d")}</div>
+										<span cond="$wi->display_author == 'Y'" class="author">{$v->getNickName()}</span>
+										<span cond="$wi->display_readed_count == 'Y'" class="readed">R {$v->get('readed_count')}</span><!--@if($v->getCommentCount())--><span class="comment_cnt" style="font-size:11px; margin-left:10px">C {$v->getCommentCount()}</span><!--@if($wi->display_voted_count == 'Y' && $v->get('voted_count')>0 )--><!--@if($wi->display_readed_count == 'Y')--><!--@end--><span class="voted">V {$v->get('voted_count')}</span><!--@end-->
+										<!--@end-->
+										</span >
+									</td>
+								</tr>
+							</table>
+						</td>
+					<!--@end-->
+				</tr>
+			</table>
+		</div>
+	<!--@end-->
+
+	<div class="bottom_mid">
+		<div class="bottom_left"></div>
+		<div class="bottom_right"></div>
+		<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<script>
+	function overTab(tabElement) {
+		var tabId = tabElement.id.replace("tab_", "content_");
+
+		// 모든 탭과 콘텐츠 숨기기
+		$(".tab").removeClass("on");
+		$(".tabContent").removeClass("show").addClass("hide");
+
+		// 선택한 탭과 해당 콘텐츠 보이기
+		$(tabElement).addClass("on");
+		$("#" + tabId).removeClass("hide").addClass("show");
+
+		// slick 초기화 및 첫 번째 슬라이드로 이동
+		var $slider = $("#" + tabId).find(".tab-slide");
+		$slider.slick("setPosition");  // 슬라이더 위치 재조정
+		$slider.slick("slickGoTo", 0); // 첫 번째 슬라이드로 이동
+	}
+</script>
