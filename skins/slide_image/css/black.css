@@ -30,7 +30,7 @@
 
 .newest_tapbox_image .tabContent .titleBox .title { display: inline-flex; align-items: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .newest_tapbox_image .tabContent .titleBox .title a { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.newest_tapbox_image .tabContent .titleBox .title .c_icon { flex-shrink: 0; margin-left:3px; }
+.newest_tapbox_image .tabContent .titleBox .title .c_icon { display:inline-flex; align-items:center; gap:3px; flex-shrink:0; margin-left:3px; }
 
 .newest_tapbox_image .comment_cnt { font-size:.8em; color:#fff; }
 .newest_tapbox_image .tabContent .titleBox .title a { color:#fff; }

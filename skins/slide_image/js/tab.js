@@ -1,22 +1,18 @@
-function overTab(obj) {
-    var tab_id = obj.id;
+function overTab(tabElement) {
+    var tabId = tabElement.id.replace("tab_", "content_");
 
-    var cObj = obj.parentNode.firstChild;
-    while(cObj) {
-        if(cObj.nodeName == "DIV" && cObj.id) {
-            var cTabID= cObj.id;
-            if(cTabID.indexOf('tab')<0) continue;
-            var cContentID = cTabID.replace(/^tab/,'content');
+    // 모든 탭과 콘텐츠 숨기기
+    $(".tab").removeClass("on");
+    $(".tabContent").removeClass("show").addClass("hide");
 
-            if(tab_id == cTabID) {
-                cObj.className = "tab on";
-                xGetElementById(cContentID).className = "tabContent show";
-            } else {
-                cObj.className = "tab";
-                xGetElementById(cContentID).className = "tabContent hide";
-            }
-        }
-        cObj = cObj.nextSibling;
+    // 선택한 탭과 해당 콘텐츠 보이기
+    $(tabElement).addClass("on");
+    $("#" + tabId).removeClass("hide").addClass("show");
+
+    // slick 슬라이더 초기화 및 첫 번째 슬라이드로 이동
+    var $slider = $("#" + tabId).find(".tab-slide");
+    if ($slider.length) {
+        $slider.slick("setPosition");
+        $slider.slick("slickGoTo", 0);
     }
-
 }
