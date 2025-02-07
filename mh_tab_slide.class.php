@@ -2,7 +2,7 @@
 /**
  * @class mh_tab_slide
  * @brief 다중 모듈의 최신글을 탭 형식으로 표시하는 위젯
- * @version 0.5 (PHP 8 호환)
+ * @version 0.5 (PHP 8 호환, 기본값 적용)
  **/
 
 class mh_tab_slide extends WidgetHandler {
@@ -21,25 +21,61 @@ class mh_tab_slide extends WidgetHandler {
 		$oModuleModel = getModel('module');
 		$oDocumentModel = getModel('document');
 
+		// 기본값 설정
+		$defaults = [
+			'order_target' => 'list_order',
+			'order_type' => 'asc',
+			'subject_cut_size' => 20,
+			'list_count' => 6,
+			'thumbnail_type' => 'fill',
+			'thumbnail_width' => 100,
+			'thumbnail_height' => 100,
+			'thumbnail_zoom' => 2,
+			'view_no' => 3,
+			'mo_view' => 1,
+			'scroll_no' => 1,
+			'autospeed' => 5000,
+			'speed' => 3000,
+			'rows' => 1,
+			'center_padding' => '50p',
+			'autoplay' => 'true',
+			'infinite' => 'true',
+			'dots' => 'true',
+			'vertical' => 'false',
+			'center_m' => 'false',
+			'fade' => 'false',
+			'display_author' => '',
+			'display_regdate' => '',
+			'display_readed_count' => '',
+			'display_voted_count' => '',
+			'thumd_nails' => '',
+			'zoom' => '',
+			'file_icon' => '',
+			'duration_new' => 24 * 60 * 60, // 24시간을 초 단위로 변환
+		];
+
+		// $args와 $defaults 병합 (기본값 적용)
+		$settings = array_merge($defaults, (array) $args);
+
+		// 위젯 정보 초기화
+		$widget_info = (object) $settings;
+
 		// mid_list 처리 (이전 버전 호환성 유지)
-		if (!empty($args->mid_list)) {
-			$mid_list = explode(",", $args->mid_list);
+		if (!empty($widget_info->mid_list)) {
+			$mid_list = explode(",", $widget_info->mid_list);
 			if (!empty($mid_list)) {
 				$module_srls = $oModuleModel->getModuleSrlByMid($mid_list);
-				$args->module_srls = !empty($module_srls) ? implode(',', $module_srls) : null;
+				$widget_info->module_srls = !empty($module_srls) ? implode(',', $module_srls) : null;
 			}
 		}
 
 		// 모듈이 선택되지 않은 경우
-		if (empty($args->module_srls)) {
+		if (empty($widget_info->module_srls)) {
 			return Context::getLang('msg_not_founded') ?? 'Module not found';
 		}
 
-		// 위젯 기본 설정 초기화
-		$widget_info = $this->initializeWidgetInfo($args);
-
 		// 모듈 정보 가져오기
-		$module_list = $oModuleModel->getModulesInfo($args->module_srls);
+		$module_list = $oModuleModel->getModulesInfo($widget_info->module_srls);
 		if (empty($module_list)) {
 			return Context::getLang('msg_not_founded') ?? 'No modules found';
 		}
@@ -58,63 +94,11 @@ class mh_tab_slide extends WidgetHandler {
 		Context::set('tab_list', $tab_list);
 
 		// 템플릿 처리
-		$tpl_path = sprintf('%sskins/%s', $this->widget_path, $args->skin);
-		Context::set('colorset', $args->colorset);
+		$tpl_path = sprintf('%sskins/%s', $this->widget_path, $widget_info->skin);
+		Context::set('colorset', $widget_info->colorset);
 
 		$oTemplate = TemplateHandler::getInstance();
 		return $oTemplate->compile($tpl_path, 'list');
-	}
-
-	/**
-	 * 위젯 설정 초기화
-	 */
-	private function initializeWidgetInfo(object $args): object {
-		$widget_info = new stdClass();
-
-		// 기본 설정
-		$widget_info->order_target = in_array($args->order_target, ['list_order', 'update_order']) 
-			? $args->order_target 
-			: 'list_order';
-		$widget_info->order_type = in_array($args->order_type, ['asc', 'desc']) 
-			? $args->order_type 
-			: 'asc';
-		$widget_info->subject_cut_size = (int)($args->subject_cut_size ?? 20);
-		$widget_info->list_count = (int)($args->list_count ?? 5);
-		
-		// 썸네일 설정
-		$widget_info->thumbnail_type = $args->thumbnail_type ?? 'fill';
-		$widget_info->thumbnail_width = (int)($args->thumbnail_width ?? 100);
-		$widget_info->thumbnail_height = (int)($args->thumbnail_height ?? 100);
-		$widget_info->thumbnail_zoom = (int)($args->thumbnail_zoom ?? 2);
-
-		// 슬라이드 설정
-		$widget_info->view_no = (int)($args->view_no ?? 2);
-		$widget_info->scroll_no = (int)($args->scroll_no ?? 1);
-		$widget_info->autospeed = (int)($args->autospeed ?? 5000);
-		$widget_info->speed = (int)($args->speed ?? 3000);
-		$widget_info->rows = (int)($args->rows ?? 1);
-		$widget_info->center_padding = $args->center_padding ?? '50p';
-		$widget_info->autoplay = $args->autoplay ?? 'true';
-		$widget_info->infinite = $args->infinite ?? 'true';
-		$widget_info->dots = $args->dots ?? 'true';
-		$widget_info->vertical = $args->vertical ?? 'false';
-		$widget_info->center_m = $args->center_m ?? 'false';
-		$widget_info->fade = $args->fade ?? 'false';
-
-		// 표시 옵션 설정
-		$widget_info->display_author = $args->display_author ?? '';
-		$widget_info->display_regdate = $args->display_regdate ?? '';
-		$widget_info->display_readed_count = $args->display_readed_count ?? '';
-		$widget_info->display_voted_count = $args->display_voted_count ?? '';
-		$widget_info->thumd_nails = $args->thumd_nails ?? '';
-		$widget_info->zoom = $args->zoom ?? '';
-		$widget_info->file_icon = $args->file_icon ?? '';
-
-		// 최근 글 표시 시간 설정
-		$widget_info->duration_new = (int)($args->duration_new ?? 12) * 60 * 60;
-		$widget_info->tab_text = $args->tab_text ?? '';
-
-		return $widget_info;
 	}
 
 	/**

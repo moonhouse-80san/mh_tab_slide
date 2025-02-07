@@ -67,10 +67,9 @@
 						breakpoint: 479, //화면 사이즈 479px
 						settings: {
 							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-							slidesToShow:1,
+							slidesToShow:{$wi->mo_view},
 							slidesToScroll :1,
-							arrows: false,
-							dots: false
+							dots: true
 						}
 					}
 				]
@@ -81,7 +80,7 @@
 <div class="newest_tapbox_image">
 	<div class="tabBox">
 		<div class="right-corner">
-			<div class="left-corner"><span class="tab_title">{$wi->tab_text}</span></div>
+			<div class="left-corner"></div>
 			<div class="left-corner-on"></div>
 			<!--@if($wi->rows_list_count>1)--><!--@end-->
 			<!--@foreach($tab_list as $key => $val)-->
@@ -112,7 +111,7 @@
 									<td class="zoom-section">
 										<div class="thumbnail zoom-small-image">
 											<a href=<!--@if($wi->zoom== 'Y')-->"{$v->getThumbnail($wi->thumbnail_width*$wi->thumbnail_zoom,$wi->thumbnail_height*$wi->thumbnail_zoom,ratio)}" class='cloud-zoom' rel="position:'inside',showTitle:false,adjustX:-1,adjustY:-1"<!--@else-->"{getUrl('','document_srl',$v->document_srl)}" onfocus="this.blur()"<!--@end-->>
-												<img style="width:{$wi->thumbnail_width}px; height: {$wi->thumbnail_height}px;" src="{$v->getThumbnail($wi->thumbnail_width,$wi->thumbnail_height,$wi->thumbnail_type)}" onerror="this.src='{$tpl_path}images/no_image.png'" class="pr_tooltip" pr_color="blue" pr_position="right" title="{$v->getTitle()}"/>
+												<img style="width:{$wi->thumbnail_width}px; height: {$wi->thumbnail_height}px;" src="{$v->getThumbnail($wi->thumbnail_width,$wi->thumbnail_height,$wi->thumbnail_type)}" onerror="this.src='{$tpl_path}css/no_image.png'" class="pr_tooltip" pr_color="blue" pr_position="right" title="{$v->getTitle()}"/>
 											</a>
 										</div>
 									</td>
