@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget version="0.2">
 	<title>Mh Tab Slide</title>
-	<description>문서를 탭형태로 출력 & 슬라이딩 위젯입니다.</description>
+	<description>문서를 탭형태로 출력하고 슬라이딩 하는 위젯입니다.</description>
 	<version>1.0</version>
 	<date>2025-02-06</date>
 
@@ -46,51 +46,6 @@
 				<type>text</type>
 				<name>제목 글자수</name>
 				<description>제목 글자수를 지정할 수 있습니다. (기본 20)</description>
-			</var>
-			<var id="thumbnail_type">
-				<type>select</type>
-				<name>썸네일 생성 방법</name>
-				<description>썸네일 생성 방법을 선택할 수 있습니다. (fill : 채우기, crop : 꽉 채우기, ratio : 비율 맞추기)</description>
-				<options>
-					<name>fill (채우기)</name>
-					<value>fill</value>
-				</options>
-				<options>
-					<value>crop</value>
-					<name>Crop (채우기)</name>
-				</options>
-				<options>
-					<value>ratio</value>
-					<name>Ratio (비율 맞추기)</name>
-				</options>
-			</var>
-			<var id="thumbnail_width">
-				<type>text</type>
-				<name>이미지 가로크기</name>
-				<description>출력될 이미지의 가로크기를 정하실 수 있습니다. (기본 100)</description>
-			</var>
-			<var id="thumbnail_height">
-				<type>text</type>
-				<name>이미지 세로크기</name>
-				<description>이미지의 세로 크기를 지정할 수 있습니다. (기본 100px)</description>
-			</var>
-			<var id="zoom">
-				<name>썸네일 줌 형식</name>
-				<description />
-				<type>select</type>
-				<options>
-					<name>게시판링크</name>
-					<value></value>
-				</options>
-				<options>
-					<name>줌 형식</name>
-					<value>Y</value>
-				</options>
-			</var>
-			<var id="thumbnail_zoom">
-				<name>썸네일 줌배율</name>
-				<description>썸네일 줌 형식 선택시 줌배율을 지정합니다. (기본 2)</description>
-				<type>text</type>
 			</var>
 			<var id="display_author">
 				<type>select</type>
@@ -157,6 +112,51 @@
 					<value>N</value>
 				</options>
 			</var>
+			<var id="thumbnail_type">
+				<type>select</type>
+				<name>썸네일 생성 방법</name>
+				<description>썸네일 생성 방법을 선택할 수 있습니다. (fill : 채우기, crop : 꽉 채우기, ratio : 비율 맞추기)</description>
+				<options>
+					<name>fill (채우기)</name>
+					<value>fill</value>
+				</options>
+				<options>
+					<value>crop</value>
+					<name>Crop (채우기)</name>
+				</options>
+				<options>
+					<value>ratio</value>
+					<name>Ratio (비율 맞추기)</name>
+				</options>
+			</var>
+			<var id="thumbnail_width">
+				<type>text</type>
+				<name>이미지 가로크기</name>
+				<description>출력될 이미지의 가로크기를 정하실 수 있습니다. (기본 100)</description>
+			</var>
+			<var id="thumbnail_height">
+				<type>text</type>
+				<name>이미지 세로크기</name>
+				<description>이미지의 세로 크기를 지정할 수 있습니다. (기본 100px)</description>
+			</var>
+			<var id="zoom">
+				<name>썸네일 줌 형식</name>
+				<description />
+				<type>select</type>
+				<options>
+					<name>게시판링크</name>
+					<value></value>
+				</options>
+				<options>
+					<name>줌 형식</name>
+					<value>Y</value>
+				</options>
+			</var>
+			<var id="thumbnail_zoom">
+				<name>썸네일 줌배율</name>
+				<description>썸네일 줌 형식 선택시 줌배율을 지정합니다. (기본 2)</description>
+				<type>text</type>
+			</var>
 			<var id="file_icon" type="select">
 				<name>파일아이콘 표시</name>
 				<options>
@@ -192,10 +192,21 @@
 				<name>모바일 출력수</name>
 				<description>모바일 화면에 출력될 목록의 수를 정합니다.(기본값: 1개)</description>
 			</var>
+			<var id="tab_all_slide" type="select">
+				<name>모든 Tab 자동 슬라이딩</name>
+				<options>
+					<value></value>
+					<name>지정 Tab</name>
+				</options>
+				<options>
+					<value>Y</value>
+					<name>모든 Tab</name>
+				</options>
+			</var>
 			<var id="autoplay">
 				<type>select</type>
 				<name>Auto Play</name>
-				<description>슬라이딩 자동으로 설정</description>
+				<description>지정 Tab 일때 슬라이딩 선택 설정 / 모든 Tab 자동 슬라이딩 일때는 강제 자동선택</description>
 				<options>
 					<name>자동</name>
 					<value>true</value>

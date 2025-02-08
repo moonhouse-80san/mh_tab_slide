@@ -7,8 +7,8 @@
 .slick-dots li button:focus{ outline:none;}
 .slick-dots li button:hover:before,
 .slick-dots li button:focus:before{ opacity:1;}
-.slick-dots li button:before{ font-size:20px; line-height:20px; position:absolute; top:0; left:0; width:20px; height:20px; content:'•'; text-align:center; opacity:.25; color:black; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-.slick-dots li.slick-active button:before{ opacity:.75; color:black;} 
+.slick-dots li button:before{ font-size:20px; line-height:20px; position:absolute; top:0; left:0; width:20px; height:20px; content:'•'; text-align:center; opacity:.25; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+.slick-dots li.slick-active button:before{ opacity:.75; } 
 
 /* Slider */
 .slick-slider { position:relative; display:block; box-sizing:border-box; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; -webkit-touch-callout:none; -khtml-user-select:none; -ms-touch-action:pan-y; touch-action:pan-y; -webkit-tap-highlight-color:transparent;}

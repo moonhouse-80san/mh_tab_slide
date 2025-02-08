@@ -44,14 +44,7 @@ class mh_tab_slide extends WidgetHandler {
 			'vertical' => 'false',
 			'center_m' => 'false',
 			'fade' => 'false',
-			'display_author' => '',
-			'display_regdate' => '',
-			'display_readed_count' => '',
-			'display_voted_count' => '',
-			'thumd_nails' => '',
-			'zoom' => '',
-			'file_icon' => '',
-			'duration_new' => 24 * 60 * 60, // 24시간을 초 단위로 변환
+			'duration_new' => 24 * 60 * 60 // 24시간을 초 단위로 변환
 		];
 
 		// $args와 $defaults 병합 (기본값 적용)

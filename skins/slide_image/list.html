@@ -11,71 +11,11 @@
 	<load target="css/white.css" />
 <!--@end-->
 
-<!--@if($wi->zoom =='Y')-->
-	<load target="css/zoom.css" />
-	<load target="js/cloud-zoom.1.0.2.min.js" />
-<!--@end-->
-
-<load target="js/tab.js" />
+<load target="css/zoom.css" />
+<load target="js/cloud-zoom.1.0.2.min.js" />
 <load target="css/slick.css" />
 <load target="js/slick.min.js" />
-
-<script>
-	$(document).ready(function() {
-		$('.tab-slide').slick({
-			slide: 'div',
-			focusOnSelect: true,
-			lazyLoad: 'ondemand',
-			slidesToShow: {$wi->view_no},
-			slidesToScroll : {$wi->scroll_no},
-			speed : {$wi->speed},
-			autoplaySpeed: {$wi->autospeed},
-			rows: {$wi->rows},
-			infinite: {$wi->infinite},
-			dots: {$wi->dots},
-			dotsClass: 'slick-dots',
-			autoplay: {$wi->autoplay},
-			vertical : {$wi->vertical},
-			cssEase: 'ease',
-			centerMode: {$wi->center_m},
-			fade: {$wi->fade},
-			centerPadding: '{$wi->center_padding}',
-
-			responsive: [ // 반응형 웹 구현 옵션
-					{
-						breakpoint: 1250, //화면 사이즈 1200px
-						settings: {
-							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-							slidesToShow:4
-						}
-					},
-					{
-						breakpoint: 960, //화면 사이즈 960px
-						settings: {
-							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-							slidesToShow:3
-						}
-					},
-					{
-						breakpoint: 740, //화면 사이즈 740px
-						settings: {
-							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-							slidesToShow:2
-						}
-					},
-					{
-						breakpoint: 479, //화면 사이즈 479px
-						settings: {
-							//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-							slidesToShow:{$wi->mo_view},
-							slidesToScroll :1,
-							dots: true
-						}
-					}
-				]
-		});
-	});
-</script>
+<include target="script.html" />
 
 <div class="newest_tapbox_image">
 	<div class="tabBox">
@@ -84,7 +24,7 @@
 			<div class="left-corner-on"></div>
 			<!--@if($wi->rows_list_count>1)--><!--@end-->
 			<!--@foreach($tab_list as $key => $val)-->
-				<div class="tab <!--@if(!$_checked)-->on"{@ $_checked = true;}<!--@end-->" id="tab_{$_id_prefix}_{$key}" onmouseover="overTab(this);">
+				<div class="tab <!--@if(!$_checked)-->on"{@ $_checked = true;}<!--@end-->" id="tab_{$_id_prefix}_{$key}" data-tab-id="content_{$_id_prefix}_{$key}" onmouseover="overTab(this);">
 					<div>
 						<!--@if(!Mobile::isMobileCheckByAgent())-->
 							<a href="{getUrl('','mid',$val->mid)}">{htmlspecialchars($val->browser_title)}</a>
@@ -107,7 +47,7 @@
 					<!--@foreach($val->document_list as $k => $v)-->
 						<td>
 							<table cellspacing="0">
-								<tr>
+								<tr cond="$wi->thumd_nails == 'Y'">
 									<td class="zoom-section">
 										<div class="thumbnail zoom-small-image">
 											<a href=<!--@if($wi->zoom== 'Y')-->"{$v->getThumbnail($wi->thumbnail_width*$wi->thumbnail_zoom,$wi->thumbnail_height*$wi->thumbnail_zoom,ratio)}" class='cloud-zoom' rel="position:'inside',showTitle:false,adjustX:-1,adjustY:-1"<!--@else-->"{getUrl('','document_srl',$v->document_srl)}" onfocus="this.blur()"<!--@end-->>
@@ -128,7 +68,16 @@
 										<!--@end-->
 										<div cond="$wi->display_regdate == 'Y'" class="regdate">{$v->getRegdate("Y m d")}</div>
 										<span cond="$wi->display_author == 'Y'" class="author">{$v->getNickName()}</span>
-										<span cond="$wi->display_readed_count == 'Y'" class="readed">R {$v->get('readed_count')}</span><!--@if($v->getCommentCount())--><span class="comment_cnt" style="font-size:11px; margin-left:10px">C {$v->getCommentCount()}</span><!--@if($wi->display_voted_count == 'Y' && $v->get('voted_count')>0 )--><!--@if($wi->display_readed_count == 'Y')--><!--@end--><span class="voted">V {$v->get('voted_count')}</span><!--@end-->
+										<span cond="$wi->display_readed_count == 'Y'" class="readed">R {$v->get('readed_count')}</span>
+										<!--@if($v->getCommentCount() && $wi->display_readed_count == 'Y')-->
+											<span class="comment_cnt" style="font-size:11px; margin-left:3px">
+												C {$v->getCommentCount()}
+											</span>
+										<!--@end-->
+										<!--@if($wi->display_voted_count == 'Y' && $v->get('voted_count')>0 && $wi->display_readed_count == 'Y')-->
+											<span class="voted">
+												V {$v->get('voted_count')}
+											</span>
 										<!--@end-->
 										</span >
 									</td>
