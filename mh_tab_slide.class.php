@@ -1,180 +1,159 @@
 <?php
-/**
- * @class mh_tab_slide
- * @brief 다중 모듈의 최신글을 탭 형식으로 표시하는 위젯
- * @version 0.5 (PHP 8 호환, 기본값 적용)
- **/
-
-class mh_tab_slide extends WidgetHandler {
 	/**
-	 * @brief 위젯 실행
-	 *
-	 * @param object|null $args 위젯 설정 값 (nullable 처리)
-	 * @return string 컴파일된 위젯 HTML
+	 * @class mh_tab_slide
+	 * @author zero (zero@nzeo.com)
+	 * @brief 다중 모듈 선택시 탭 형식으로 표시
+	 * @version 0.5
 	 **/
-	public function proc(?object $args = null): string {
-		if (!$args) {
-			return 'Invalid widget parameters';
-		}
 
-		// 모델 가져오기
-		$oModuleModel = getModel('module');
-		$oDocumentModel = getModel('document');
+	class mh_tab_slide extends WidgetHandler {
 
-		// 기본값 설정
-		$defaults = [
-			'order_target' => 'list_order',
-			'order_type' => 'asc',
-			'subject_cut_size' => 20,
-			'list_count' => 6,
-			'thumbnail_type' => 'fill',
-			'thumbnail_width' => 100,
-			'thumbnail_height' => 100,
-			'thumbnail_zoom' => 2,
-			'view_no' => 3,
-			'mo_view' => 1,
-			'scroll_no' => 1,
-			'autospeed' => 5000,
-			'speed' => 3000,
-			'rows' => 1,
-			'center_padding' => '50p',
-			'autoplay' => 'true',
-			'infinite' => 'true',
-			'dots' => 'true',
-			'vertical' => 'false',
-			'center_m' => 'false',
-			'fade' => 'false',
-			'duration_new' => 24 * 60 * 60 // 24시간을 초 단위로 변환
-		];
-
-		// $args와 $defaults 병합 (기본값 적용)
-		$settings = array_merge($defaults, (array) $args);
-
-		// 위젯 정보 초기화
-		$widget_info = (object) $settings;
-
-		// mid_list 처리 (이전 버전 호환성 유지)
-		if (!empty($widget_info->mid_list)) {
-			$mid_list = explode(",", $widget_info->mid_list);
-			if (!empty($mid_list)) {
-				$module_srls = $oModuleModel->getModuleSrlByMid($mid_list);
-				$widget_info->module_srls = !empty($module_srls) ? implode(',', $module_srls) : null;
+		/**
+		 * @brief 위젯의 실행 부분
+		 *
+		 * ./widgets/위젯/conf/info.xml 에 선언한 extra_vars를 args로 받는다
+		 * 결과를 만든후 print가 아니라 return 해주어야 한다
+		 **/
+		function proc($args) {
+			// 대상 모듈 (mid_list는 기존 위젯의 호환을 위해서 처리하는 루틴을 유지. module_srls로 위젯에서 변경)
+			$oModuleModel = &getModel('module');
+			if($args->mid_list) {
+				$mid_list = explode(",",$args->mid_list);
+				if(count($mid_list)) {
+					$module_srls = $oModuleModel->getModuleSrlByMid($mid_list);
+					if(count($module_srls)) $args->module_srls = implode(',',$module_srls);
+					else $args->module_srls = null;
+				} 
 			}
-		}
 
-		// 모듈이 선택되지 않은 경우
-		if (empty($widget_info->module_srls)) {
-			return Context::getLang('msg_not_founded') ?? 'Module not found';
-		}
+			// 선택된 모듈이 없으면 실행 취소
+			if(!$args->module_srls) return Context::getLang('msg_not_founded');
 
-		// 모듈 정보 가져오기
-		$module_list = $oModuleModel->getModulesInfo($widget_info->module_srls);
-		if (empty($module_list)) {
-			return Context::getLang('msg_not_founded') ?? 'No modules found';
-		}
+			// 정렬 대상
+			if(!in_array($args->order_target, array('list_order','update_order'))) $args->order_target = 'list_order';
 
-		// 도메인 정보 처리
-		$site_domain = $this->getSiteDomains($module_list, $oModuleModel);
+			// 정렬 순서
+			if(!in_array($args->order_type, array('asc','desc'))) $args->order_type = 'asc';
 
-		// 모듈 목록 처리
-		$tab_list = $this->processModuleList($module_list, $site_domain);
+			if(!$args->subject_cut_size) $args->subject_cut_size = 20;
+			if(!$args->list_count) $args->list_count = 5;
+			if(!$args->thumbnail_type) $args->thumbnail_type = 'fill';
+			if(!$args->thumbnail_width) $args->thumbnail_width = 100;
+			if(!$args->thumbnail_height) $args->thumbnail_height = 100;
+			if(!$args->thumbnail_zoom) $args->thumbnail_zoom = 2;
+			if(!$args->duration_new) $args->duration_new = 24;
 
-		// 문서 목록 가져오기
-		$tab_list = $this->getDocumentList($tab_list, $widget_info, $oDocumentModel);
+			// Slide 설정값
+			if(!$args->view_no) $args->view_no = 2;
+			if(!$args->mo_view) $args->mo_view = 1;
+			if(!$args->scroll_no) $args->scroll_no = 1;
+			if(!$args->autospeed) $args->autospeed = 5000;
+			if(!$args->speed) $args->speed = 3000;
+			if(!$args->rows) $args->rows = 1;
+			if(!$args->center_padding) $args->center_padding = '50p';
 
-		// 컨텍스트 설정
-		Context::set('widget_info', $widget_info);
-		Context::set('tab_list', $tab_list);
+			// Slick 옵션
+			if(!$args->autoplay) $args->autoplay = 'true';
+			if(!$args->infinite) $args->infinite = 'true';
+			if(!$args->dots) $args->dots = 'true';
+			if(!$args->vertical) $args->vertical = 'false';
+			if(!$args->center_m) $args->center_m = 'false';
+			if(!$args->fade) $args->fade = 'false';
 
-		// 템플릿 처리
-		$tpl_path = sprintf('%sskins/%s', $this->widget_path, $widget_info->skin);
-		Context::set('colorset', $widget_info->colorset);
+			// 노출 여부 체크
+			if($args->display_author!='Y') $args->display_author = 'N';
+			else $args->display_author = 'Y';
+			if($args->display_regdate!='Y') $args->display_regdate = 'N';
+			else $args->display_regdate = 'Y';
+			if($args->display_readed_count!='Y') $args->display_readed_count = 'N';
+			else $args->display_readed_count = 'Y';
+			if($args->display_voted_count!='Y') $args->display_voted_count = 'N';
+			else $args->display_voted_count = 'Y';
+			if($args->thumd_nails!='Y') $args->thumd_nails = 'N';
+			else $args->thumd_nails = 'Y';
+			if($args->zoom!='Y') $args->zoom = 'N';
+			else $args->zoom = 'Y';
 
-		$oTemplate = TemplateHandler::getInstance();
-		return $oTemplate->compile($tpl_path, 'list');
-	}
+			$oModuleModel = &getModel('module');
+			$oDocumentModel = &getModel('document');
 
-	/**
-	 * 사이트 도메인 정보 가져오기
-	 */
-	private function getSiteDomains(array $module_list, object $oModuleModel): array {
-		$site_domain = [0 => Context::getDefaultUrl()];
-		$site_module_info = Context::get('site_module_info');
+			// 모듈 목록을 구함
+			$module_list = $oModuleModel->getModulesInfo($args->module_srls);
+			if(!count($module_list)) return Context::getLang('msg_not_founded');
 
-		if ($site_module_info) {
-			$site_domain[$site_module_info->site_srl] = $site_module_info->domain;
-		}
+			// 각 모듈별로 먼저 정리 시작
+			$site_domain = array(0 => Context::getDefaultUrl());
+			$site_module_info = Context::get('site_module_info');
+			if($site_module_info) $site_domain[$site_module_info->site_srl] = $site_module_info->domain;
 
-		foreach ($module_list as $module) {
-			if (!isset($site_domain[$module->site_srl])) {
-				$site_info = $oModuleModel->getSiteInfo($module->site_srl);
-				$site_domain[$module->site_srl] = $site_info->domain ?? '';
-			}
-		}
-
-		return $site_domain;
-	}
-
-	/**
-	 * 모듈 목록 처리
-	 */
-	private function processModuleList(array $module_list, array $site_domain): array {
-		$tab_list = [];
-
-		foreach ($module_list as $module) {
-			$module->domain = $site_domain[$module->site_srl] ?? '';
-			$tab_list[$module->module_srl] = $module;
-		}
-
-		return $tab_list;
-	}
-
-	/**
-	 * 문서 목록 가져오기 및 최신 수정 순으로 탭 정렬
-	 */
-	private function getDocumentList(array $tab_list, object $widget_info, object $oDocumentModel): array {
-		$obj = new stdClass();
-		$obj->list_count = $widget_info->list_count;
-		$obj->sort_index = $widget_info->order_target;
-		$obj->order_type = $widget_info->order_type === "desc" ? "asc" : "desc";
-
-		$newest_tab = [];
-
-		foreach ($tab_list as $module_srl => &$module_info) {
-			$obj->module_srl = intval($module_srl);
-			$output = executeQueryArray("widgets.mh_tab_slide.getNewestDocuments", $obj);
-
-			if (!empty($output->data)) {
-				$module_info->document_list = [];
-
-				foreach ($output->data as $document_data) {
-					$oDocument = new documentItem(); // documentItem 객체 생성
-					$oDocument->setAttribute($document_data);
-					$module_info->document_list[] = $oDocument;
-
-					// 최신 수정 시간 저장
-					if (!isset($newest_tab[$module_srl]) || 
-						$newest_tab[$module_srl] < $oDocument->get('last_update')) {
-						$newest_tab[$module_srl] = $oDocument->get('last_update');
-					}
+			foreach($module_list as $key => $val) {
+				if(!$site_domain[$val->site_srl]) {
+					$site_info = $oModuleModel->getSiteInfo($val->site_srl);
+					$site_domain[$site_info->site_srl] = $site_info->domain;
 				}
-			} else {
-				unset($tab_list[$module_srl]);
-			}
-		}
-
-		// 최신 수정 시간 기준으로 탭 정렬
-		if (!empty($newest_tab)) {
-			arsort($newest_tab);
-
-			$sorted_tab_list = [];
-			foreach ($newest_tab as $module_srl => $last_update) {
-				$sorted_tab_list[$module_srl] = $tab_list[$module_srl];
+				$module_list[$key]->domain = $site_domain[$val->site_srl];
+				$mid_module_list[$val->module_srl] = $key;
 			}
 
-			return $sorted_tab_list;
-		}
+			$module_srl = explode(',',$args->module_srls);
+			for($i=0;$i<count($module_srl);$i++) $tab_list[$mid_module_list[$module_srl[$i]]] = $module_list[$mid_module_list[$module_srl[$i]]];
 
-		return $tab_list;
+			// 각 모듈에 해당하는 문서들을 구함
+			$obj = null;
+			$obj->list_count = $args->list_count;
+			$obj->sort_index = $args->order_target;
+			$obj->order_type = $args->order_type=="desc"?"asc":"desc";
+			foreach($tab_list as $key => $value) {
+				$mid = $key;
+				$module_srl = $value->module_srl;
+				$browser_title = $value->browser_title;
+
+				$tab_list[$key]->category_list = $oDocumentModel->getCategoryList($module_srl); 
+
+				$obj->module_srl = $module_srl;
+				$output = executeQueryArray("widgets.mh_tab_slide.getNewestDocuments", $obj);
+				unset($data);
+
+				if($output->data && count($output->data)) {
+					foreach($output->data as $k => $v) {
+						$oDocument = null;
+						$oDocument = new documentItem();
+						$oDocument->setAttribute($v);
+						$data[$k] = $oDocument;
+						if(!$newest_tab[$key]) $newest_tab[$key] = $oDocument->get('last_update');
+					}
+					$tab_list[$key]->document_list = $data;
+				} else {
+					unset($tab_list[$key]);
+				}
+			}
+			
+			if(count($newest_tab)) {
+				arsort($newest_tab);
+				$sorted_tab_list = array();
+				foreach($newest_tab as $module_srl => $last_update) {
+					$sorted_tab_list[$module_srl] = $tab_list[$module_srl];
+				}
+			} else $sorted_tab_list = $tab_list;
+
+			// $args를 복사하여 widget_info 생성
+			$widget_info = clone $args;
+			// 시간을 초 단위로 변환 (widget_info에만 적용)
+			$widget_info->duration_new = (int)$args->duration_new * 60 * 60;
+
+			Context::set('widget_info', $widget_info);
+			Context::set('tab_list', $sorted_tab_list);
+
+			// 템플릿의 스킨 경로를 지정 (skin, colorset에 따른 값을 설정)
+			$tpl_path = sprintf('%sskins/%s', $this->widget_path, $args->skin);
+			Context::set('colorset', $args->colorset);
+
+			// 템플릿 파일을 지정
+			$tpl_file = 'list';
+
+			// 템플릿 컴파일
+			$oTemplate = &TemplateHandler::getInstance();
+			return $oTemplate->compile($tpl_path, $tpl_file);
+		}
 	}
-}
+?>

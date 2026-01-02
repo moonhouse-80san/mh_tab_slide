@@ -99,6 +99,34 @@
 					<name>표시하지 않음</name>
 				</options>
 			</var>
+			<var id="star_point">
+				<name>📍 평점 표시</name>
+				<description><![CDATA[
+				<a href="https://moonhouse.co.kr/xemy/598200" target="_blank" style="color:#ff6600">게시글 별 평점 모듈</a> 설치가 필수입니다.]]>
+				</description>
+				<type>select</type>
+				<options>
+					<name>표시하지 않음</name>
+					<value></value>
+				</options>
+				<options>
+					<name>표시</name>
+					<value>Y</value>
+				</options>
+			</var>
+			<var id="star_user">
+				<name>　┖ 별 표시</name>
+				<description>평점 옆에 별평점도 출력</description>
+				<type>select</type>
+				<options>
+					<name>출력하지 않음</name>
+					<value></value>
+				</options>
+				<options>
+					<name>출력</name>
+					<value>Y</value>
+				</options>
+			</var>
 			<var id="thumd_nails">
 				<name>썸네일 표시</name>
 				<type>select</type>

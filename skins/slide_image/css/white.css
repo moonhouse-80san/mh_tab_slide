@@ -46,3 +46,11 @@
 
 .slick-dots li button:before{ color:black !important; }
 .slick-dots li.slick-active button:before{ color:black !important; } 
+
+/* 평점 표시 부분 */
+.starpoint { display: inline-block; margin: 5px auto; }
+.starpoint .score { color:#bbb; }
+.starRating,
+.starRating span { overflow:hidden;display:inline-block;height:14px;background:transparent url(../css/iconStarRating.png) no-repeat}
+.starRating { width:79px;vertical-align:middle;text-align:left !important}
+.starRating span{ font-size:0;line-height:0;vertical-align:top;text-indent:-100px;*text-indent:0;background-position:0 -14px}

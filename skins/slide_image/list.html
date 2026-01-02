@@ -51,7 +51,7 @@
 									<td class="zoom-section">
 										<div class="thumbnail zoom-small-image">
 											<a href=<!--@if($wi->zoom== 'Y')-->"{$v->getThumbnail($wi->thumbnail_width*$wi->thumbnail_zoom,$wi->thumbnail_height*$wi->thumbnail_zoom,ratio)}" class='cloud-zoom' rel="position:'inside',showTitle:false,adjustX:-1,adjustY:-1"<!--@else-->"{getUrl('','document_srl',$v->document_srl)}" onfocus="this.blur()"<!--@end-->>
-												<img style="width:{$wi->thumbnail_width}px; height: {$wi->thumbnail_height}px;" src="{$v->getThumbnail($wi->thumbnail_width,$wi->thumbnail_height,$wi->thumbnail_type)}" onerror="this.src='{$tpl_path}css/no_image.png'" class="pr_tooltip" pr_color="blue" pr_position="right" title="{$v->getTitle()}"/>
+												<img src="{$v->getThumbnail($wi->thumbnail_width,$wi->thumbnail_height,$wi->thumbnail_type)}" onerror="this.src='{$tpl_path}css/no_images.png'; this.style.width='{$wi->thumbnail_width+12}px'; this.style.height='{$wi->thumbnail_height+12}px';" class="pr_tooltip" pr_color="blue" pr_position="right" title="{$v->getTitle()}"/>
 											</a>
 										</div>
 									</td>
@@ -82,6 +82,21 @@
 										</span >
 									</td>
 								</tr>
+								<!-- 평점 표시 부분 -->
+								<block cond="!$wi->star_point == ''">
+									{@
+										$oStarPointModel = getModel('starpoint');
+										$total_point = $oStarPointModel->getDocumentRatedTotalPoint($v->document_srl);
+									}
+									<!--@if($total_point->avg > 0)-->
+									<tr>
+									<td class="starpoint">
+										<span class="score">평점 : {number_format($total_point->avg, 1)}점</span>
+										<span cond="!$wi->star_user == ''" class="starRating"><span style="width:{$total_point->avg*20}%">{number_format($total_point->avg, 1)}</span></span>
+									</td>
+									</tr>
+									<!--@end-->
+								</block>
 							</table>
 						</td>
 					<!--@end-->
