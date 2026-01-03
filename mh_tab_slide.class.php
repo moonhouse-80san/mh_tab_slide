@@ -16,8 +16,8 @@
 		 **/
 		function proc($args) {
 			// 대상 모듈 (mid_list는 기존 위젯의 호환을 위해서 처리하는 루틴을 유지. module_srls로 위젯에서 변경)
-			$oModuleModel = &getModel('module');
-			if($args->mid_list) {
+			$oModuleModel = getModel('module');
+			if($args->mid_list ?? null) {
 				$mid_list = explode(",",$args->mid_list);
 				if(count($mid_list)) {
 					$module_srls = $oModuleModel->getModuleSrlByMid($mid_list);
@@ -27,55 +27,45 @@
 			}
 
 			// 선택된 모듈이 없으면 실행 취소
-			if(!$args->module_srls) return Context::getLang('msg_not_founded');
+			if(!($args->module_srls ?? null)) return Context::getLang('msg_not_founded');
 
 			// 정렬 대상
-			if(!in_array($args->order_target, array('list_order','update_order'))) $args->order_target = 'list_order';
+			$args->order_target = in_array($args->order_target ?? null, array('list_order','update_order')) 
+				? $args->order_target 
+				: 'list_order';
 
 			// 정렬 순서
-			if(!in_array($args->order_type, array('asc','desc'))) $args->order_type = 'asc';
+			$args->order_type = in_array($args->order_type ?? null, array('asc','desc')) 
+				? $args->order_type 
+				: 'asc';
 
-			if(!$args->subject_cut_size) $args->subject_cut_size = 20;
-			if(!$args->list_count) $args->list_count = 5;
-			if(!$args->thumbnail_type) $args->thumbnail_type = 'fill';
-			if(!$args->thumbnail_width) $args->thumbnail_width = 100;
-			if(!$args->thumbnail_height) $args->thumbnail_height = 100;
-			if(!$args->thumbnail_zoom) $args->thumbnail_zoom = 2;
-			if(!$args->duration_new) $args->duration_new = 24;
+			$args->subject_cut_size = $args->subject_cut_size ?? 20;
+			$args->list_count = $args->list_count ?? 5;
+			$args->thumbnail_type = $args->thumbnail_type ?? 'fill';
+			$args->thumbnail_width = $args->thumbnail_width ?? 100;
+			$args->thumbnail_height = $args->thumbnail_height ?? 100;
+			$args->thumbnail_zoom = $args->thumbnail_zoom ?? 2;
+			$args->duration_new = $args->duration_new ?? 24;
 
 			// Slide 설정값
-			if(!$args->view_no) $args->view_no = 2;
-			if(!$args->mo_view) $args->mo_view = 1;
-			if(!$args->scroll_no) $args->scroll_no = 1;
-			if(!$args->autospeed) $args->autospeed = 5000;
-			if(!$args->speed) $args->speed = 3000;
-			if(!$args->rows) $args->rows = 1;
-			if(!$args->center_padding) $args->center_padding = '50p';
+			$args->view_no = $args->view_no ?? 2;
+			$args->mo_view = $args->mo_view ?? 1;
+			$args->scroll_no = $args->scroll_no ?? 1;
+			$args->autospeed = $args->autospeed ?? 5000;
+			$args->speed = $args->speed ?? 3000;
+			$args->rows = $args->rows ?? 1;
+			$args->center_padding = $args->center_padding ?? '50p';
 
 			// Slick 옵션
-			if(!$args->autoplay) $args->autoplay = 'true';
-			if(!$args->infinite) $args->infinite = 'true';
-			if(!$args->dots) $args->dots = 'true';
-			if(!$args->vertical) $args->vertical = 'false';
-			if(!$args->center_m) $args->center_m = 'false';
-			if(!$args->fade) $args->fade = 'false';
+			$args->autoplay = $args->autoplay ?? 'true';
+			$args->infinite = $args->infinite ?? 'true';
+			$args->dots = $args->dots ?? 'true';
+			$args->vertical = $args->vertical ?? 'false';
+			$args->center_m = $args->center_m ?? 'false';
+			$args->fade = $args->fade ?? 'false';
 
-			// 노출 여부 체크
-			if($args->display_author!='Y') $args->display_author = 'N';
-			else $args->display_author = 'Y';
-			if($args->display_regdate!='Y') $args->display_regdate = 'N';
-			else $args->display_regdate = 'Y';
-			if($args->display_readed_count!='Y') $args->display_readed_count = 'N';
-			else $args->display_readed_count = 'Y';
-			if($args->display_voted_count!='Y') $args->display_voted_count = 'N';
-			else $args->display_voted_count = 'Y';
-			if($args->thumd_nails!='Y') $args->thumd_nails = 'N';
-			else $args->thumd_nails = 'Y';
-			if($args->zoom!='Y') $args->zoom = 'N';
-			else $args->zoom = 'Y';
-
-			$oModuleModel = &getModel('module');
-			$oDocumentModel = &getModel('document');
+			$oModuleModel = getModel('module');
+			$oDocumentModel = getModel('document');
 
 			// 모듈 목록을 구함
 			$module_list = $oModuleModel->getModulesInfo($args->module_srls);
@@ -86,8 +76,9 @@
 			$site_module_info = Context::get('site_module_info');
 			if($site_module_info) $site_domain[$site_module_info->site_srl] = $site_module_info->domain;
 
+			$mid_module_list = array(); // 배열 초기화
 			foreach($module_list as $key => $val) {
-				if(!$site_domain[$val->site_srl]) {
+				if(!isset($site_domain[$val->site_srl])) {
 					$site_info = $oModuleModel->getSiteInfo($val->site_srl);
 					$site_domain[$site_info->site_srl] = $site_info->domain;
 				}
@@ -95,14 +86,21 @@
 				$mid_module_list[$val->module_srl] = $key;
 			}
 
+			$tab_list = array(); // 배열 초기화
 			$module_srl = explode(',',$args->module_srls);
-			for($i=0;$i<count($module_srl);$i++) $tab_list[$mid_module_list[$module_srl[$i]]] = $module_list[$mid_module_list[$module_srl[$i]]];
+			for($i=0;$i<count($module_srl);$i++) {
+				if(isset($mid_module_list[$module_srl[$i]])) {
+					$tab_list[$mid_module_list[$module_srl[$i]]] = $module_list[$mid_module_list[$module_srl[$i]]];
+				}
+			}
 
 			// 각 모듈에 해당하는 문서들을 구함
-			$obj = null;
+			$obj = new stdClass(); // null 대신 stdClass 객체 생성
 			$obj->list_count = $args->list_count;
 			$obj->sort_index = $args->order_target;
 			$obj->order_type = $args->order_type=="desc"?"asc":"desc";
+			
+			$newest_tab = array(); // 배열 초기화
 			foreach($tab_list as $key => $value) {
 				$mid = $key;
 				$module_srl = $value->module_srl;
@@ -112,7 +110,7 @@
 
 				$obj->module_srl = $module_srl;
 				$output = executeQueryArray("widgets.mh_tab_slide.getNewestDocuments", $obj);
-				unset($data);
+				$data = array(); // 배열 초기화
 
 				if($output->data && count($output->data)) {
 					foreach($output->data as $k => $v) {
@@ -120,7 +118,9 @@
 						$oDocument = new documentItem();
 						$oDocument->setAttribute($v);
 						$data[$k] = $oDocument;
-						if(!$newest_tab[$key]) $newest_tab[$key] = $oDocument->get('last_update');
+						if(!isset($newest_tab[$key])) {
+							$newest_tab[$key] = $oDocument->get('last_update');
+						}
 					}
 					$tab_list[$key]->document_list = $data;
 				} else {
@@ -128,13 +128,15 @@
 				}
 			}
 			
+			$sorted_tab_list = array(); // 배열 초기화
 			if(count($newest_tab)) {
 				arsort($newest_tab);
-				$sorted_tab_list = array();
 				foreach($newest_tab as $module_srl => $last_update) {
 					$sorted_tab_list[$module_srl] = $tab_list[$module_srl];
 				}
-			} else $sorted_tab_list = $tab_list;
+			} else {
+				$sorted_tab_list = $tab_list;
+			}
 
 			// $args를 복사하여 widget_info 생성
 			$widget_info = clone $args;
@@ -152,7 +154,7 @@
 			$tpl_file = 'list';
 
 			// 템플릿 컴파일
-			$oTemplate = &TemplateHandler::getInstance();
+			$oTemplate = TemplateHandler::getInstance();
 			return $oTemplate->compile($tpl_path, $tpl_file);
 		}
 	}
