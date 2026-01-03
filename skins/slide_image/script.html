@@ -99,6 +99,121 @@
 			}
 		}
 	</script>
+<!--@elseif($wi->tab_all_slide == 'S')-->
+	<script>
+		$(document).ready(function() {
+			window.currentTabIndex = 0;
+			window.hasCompletedCycle = false; // 사이클 완료 플래그
+			const totalTabs = $('.tab').length;
+			
+			// 모든 탭의 슬라이더 초기화
+			$('.tab-slide').each(function() {
+				$(this).slick({
+					slide: 'div',
+					focusOnSelect: true,
+					lazyLoad: 'ondemand',
+					slidesToShow: {$wi->view_no},
+					slidesToScroll: {$wi->scroll_no},
+					speed: {$wi->speed},
+					autoplaySpeed: {$wi->autospeed},
+					rows: {$wi->rows},
+					infinite: {$wi->infinite},
+					dots: {$wi->dots},
+					dotsClass: 'slick-dots',
+					autoplay: true,
+					vertical: {$wi->vertical},
+					cssEase: 'ease',
+					centerMode: {$wi->center_m},
+					fade: {$wi->fade},
+					centerPadding: '{$wi->center_padding}',
+					responsive: [
+						{
+							breakpoint: 1250,
+							settings: {
+								slidesToShow:4
+							}
+						},
+						{
+							breakpoint: 960,
+							settings: {
+								slidesToShow:3
+							}
+						},
+						{
+							breakpoint: 740,
+							settings: {
+								slidesToShow:2
+							}
+						},
+						{
+							breakpoint: 479,
+							settings: {
+								slidesToShow:{$wi->mo_view},
+								slidesToScroll:1,
+								dots: true
+							}
+						}
+					]
+				});
+			});
+			
+			// 각 슬라이더에 afterChange 이벤트 추가
+			$('.tab-slide').on('afterChange', function(event, slick, currentSlide) {
+				if ($(this).closest('.tabContent').hasClass('show')) {
+					if (currentSlide >= slick.slideCount - slick.options.slidesToShow) {
+						// 이미 사이클이 완료되었으면 동작하지 않음
+						if (window.hasCompletedCycle) {
+							return;
+						}
+						
+						setTimeout(function() {
+							// 마지막 탭인 경우
+							if (window.currentTabIndex >= totalTabs - 1) {
+								window.hasCompletedCycle = true; // 사이클 완료 표시
+								const firstTab = $('.tab').eq(0);
+								overTab(firstTab[0], true); // 정지 플래그 전달
+							} else {
+								// 다음 탭으로
+								const nextTab = $('.tab').eq(window.currentTabIndex + 1);
+								overTab(nextTab[0]);
+							}
+						}, {$wi->autospeed});
+					}
+				}
+			});
+		});
+		
+		function overTab(tabElement, shouldStop) {
+			if (!tabElement) return;
+			
+			window.currentTabIndex = $('.tab').index(tabElement);
+			
+			// data-tab-id 속성을 사용하여 탭 ID 가져오기
+			var tabId = $(tabElement).data('tab-id') || $('.tabContent').eq(window.currentTabIndex).attr('id');
+			
+			// 모든 탭과 콘텐츠 숨기기
+			$(".tab").removeClass("on");
+			$(".tabContent").removeClass("show").addClass("hide");
+			
+			// 선택한 탭과 해당 콘텐츠 보이기
+			$(tabElement).addClass("on");
+			$("#" + tabId).removeClass("hide").addClass("show");
+			
+			// 현재 탭의 슬라이더 재시작
+			var $slider = $("#" + tabId).find(".tab-slide");
+			if ($slider.length) {
+				$slider.slick('setPosition');
+				$slider.slick('slickGoTo', 0);
+				
+				// 정지 플래그가 있으면 일시정지, 없으면 재생
+				if (shouldStop) {
+					$slider.slick('slickPause');
+				} else {
+					$slider.slick('slickPlay');
+				}
+			}
+		}
+	</script>
 <!--@else-->
 	<script>
 		$(document).ready(function() {

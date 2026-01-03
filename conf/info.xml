@@ -196,11 +196,15 @@
 				<name>모든 Tab 자동 슬라이딩</name>
 				<options>
 					<value></value>
-					<name>지정 Tab</name>
+					<name>지정 Tab만</name>
 				</options>
 				<options>
 					<value>Y</value>
-					<name>모든 Tab</name>
+					<name>모든 Tab후 다시</name>
+				</options>
+				<options>
+					<value>S</value>
+					<name>모든 Tab후 정지</name>
 				</options>
 			</var>
 			<var id="autoplay">
